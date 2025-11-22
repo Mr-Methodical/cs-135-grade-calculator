@@ -11,7 +11,7 @@ def exam_requirement_met(M, F):
     return 0.25 * M + 0.45 * F >= 35.0
 
 
-def overall_pass(A, M, F, P):
+def overall_pass_new(A, M, F, P):
     return assignment_requirement_met(A) and exam_requirement_met(M, F) and ((compute_course_grade(A, M, F, P)) >= 50)
 
 
