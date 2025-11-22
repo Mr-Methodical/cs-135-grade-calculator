@@ -60,7 +60,11 @@ st.divider()
 grade_with_slider = compute_course_grade(assign_scores, M, F_slider, iclicker_scores)
 assign_ok = assignment_requirement_met(assign_scores)
 exam_ok = exam_requirement_met(M, F_slider)
-pass_overall = overall_pass(assign_scores, M, F_slider, iclicker_scores)
+pass_overall = (
+    assignment_requirement_met(assign_scores)
+    and exam_ok
+    and grade_with_slider >= 50
+)
 needed_final_score_50 = needed_score_on_final_to_pass(assign_scores, M, iclicker_scores)
 needed_final_score_60 = needed_score_on_final_for_cs136(assign_scores, M, iclicker_scores)
 
