@@ -4,7 +4,13 @@ st.set_page_config(layout="wide")
 
 from cs135_calc import *
 
-st.title("CS 135 Grade Calculator")
+col_title, col_logo = st.columns([4, 1])
+
+with col_title:
+    st.title("CS 135 Grade Calculator")
+
+with col_logo:
+    st.image("Waterloo_crest.png", width=100)
 
 st.markdown("⚠️ **Disclaimer:** This calculator is unofficial, may contain errors, and is not affiliated with the University of Waterloo.")
 st.markdown("**Weights:** Assignments 20% | Midterm 25% | Final 45% | Participation 10%")
