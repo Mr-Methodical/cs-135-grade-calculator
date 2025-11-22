@@ -1,9 +1,12 @@
 import streamlit as st
 
+st.set_page_config(layout="wide")
+
 from cs135_calc import *
 
 st.title("CS 135 Grade Calculator")
 
+st.markdown("⚠️ **Disclaimer:** This calculator is unofficial, may contain errors, and is not affiliated with the University of Waterloo.")
 st.markdown("**Weights:** Assignments 20% | Midterm 25% | Final 45% | Participation 10%")
 st.markdown("**Pass if:** Assignments ≥ 50% AND (Midterm + Final) ≥ 35/70 points")
 
@@ -12,67 +15,53 @@ st.divider()
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    assign_str = st.text_input(
+    assign_scores = st.number_input(
         "Assignment scores (%)",
-        value="",
-        help="Comma-separated (e.g. 82, 95, 100)",
+        min_value=0.0,
+        max_value=100.0,
+        value=75.0,
+        step=0.1,
+        help="Average Assignment Score",
     )
 
 with col2:
-    iclicker_str = st.text_input(
+    iclicker_scores = st.number_input(
         "Participation scores (%)",
-        value="",
-        help="Comma-separated (e.g. 100, 80, 90)",
+        min_value=0.,
+        max_value=100.0,
+        value=100.0,
+        step=0.1,
+        help="Top 75\% of Iclickr Marks",
     )
 
 with col3:
-    M = st.number_input("Midterm (%)", min_value=0.0, max_value=100.0, value=90.0)
+    M = st.number_input("Midterm (%)", 
+                        min_value=0., 
+                        max_value=100., 
+                        value=90., 
+                        step=0.1)
 
-# Helper to parse comma-separated numbers safely
-def parse_scores(s):
-    if not s.strip():
-        return []
-    parts = s.split(",")
-    scores = []
-    for p in parts:
-        p = p.strip()
-        if not p:
-            continue
-        try:
-            scores.append(float(p))
-        except ValueError:
-            # ignore invalid entries silently
-            pass
-    return scores
 
-assign_scores = parse_scores(assign_str)
-iclicker_scores = parse_scores(iclicker_str)
-
-A_avg = average(assign_scores)
-P_avg = average(iclicker_scores) if iclicker_scores else 100.0  # assume 100 if none given
-
-st.write(f"Detected {len(assign_scores)} assignment scores. Assignment average: **{A_avg:.2f}%**.")
-if iclicker_scores:
-    st.write(f"Detected {len(iclicker_scores)} participation scores. Participation average: **{P_avg:.2f}%**.")
-else:
-    st.write("No participation scores entered. Assuming **100%** for now (you can change this later).")
+st.write(f"Assignment average: ***{assign_scores:.2f}%***.")
+st.write(f"Participation average: ***{iclicker_scores:.2f}%***.")
 
 # Slider for final exam
 F_slider = st.slider("What final exam mark do you expect?", 0.0, 100.0, 80.0, step=1.0)
 
 st.divider()
 
-grade_with_slider = compute_course_grade(A_avg, M, F_slider, P_avg)
-assign_ok = assignment_requirement_met(A_avg)
+grade_with_slider = compute_course_grade(assign_scores, M, F_slider, iclicker_scores)
+assign_ok = assignment_requirement_met(assign_scores)
 exam_ok = exam_requirement_met(M, F_slider)
-pass_overall = overall_pass(A_avg, M, F_slider)
+pass_overall = overall_pass(assign_scores, M, F_slider)
+needed_final_score = needed_score_on_final(assign_scores, M)
 
 col1, col2 = st.columns(2)
 
 with col1:
-    st.metric("Assignment Average", f"{A_avg:.1f}%")
+    st.metric("Assignment Average", f"{assign_scores:.1f}%")
     st.metric("Midterm", f"{M:.1f}%")
-    st.metric("Participation Average", f"{P_avg:.1f}%")
+    st.metric("Participation Average", f"{iclicker_scores:.1f}%")
 
 with col2:
     st.metric("Final Exam (Expected)", f"{F_slider:.0f}%")
@@ -86,3 +75,24 @@ with col2:
         if not exam_ok:
             missing.append("Exams < 35/70")
         st.info(f"Missing: {', '.join(missing)}")
+
+st.divider()
+
+col1, = st.columns(1)
+
+with col1:
+    st.markdown(f"""
+        <div style="
+            background-color:#22ddca;
+            padding:20px;
+            border-radius:10px;
+            text-align:center;
+            font-size:40px;
+            font-weight:800;
+            color:#000;
+            margin-top:10px;">
+            Score Needed on Final: {needed_final_score:.0f}%
+        </div>
+        """, unsafe_allow_html=True)
+
+
