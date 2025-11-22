@@ -80,6 +80,11 @@ st.divider()
 
 col1, = st.columns(1)
 
+if needed_final_score is None:
+    final_text = "Impossible"
+else:
+    final_text = f"{needed_final_score:.0f}%"
+
 with col1:
     st.markdown(f"""
         <div style="
@@ -91,7 +96,7 @@ with col1:
             font-weight:800;
             color:#000;
             margin-top:10px;">
-            Score Needed on Final: {needed_final_score:.0f}%
+            Score Needed on Final: {final_text}
         </div>
         """, unsafe_allow_html=True)
 
